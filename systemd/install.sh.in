@@ -1,0 +1,5 @@
+sudo mkdir -p                        /etc/${PROJECT_NAME}/
+sudo cp ./@PROJECT_NAME@.conf        /etc/${PROJECT_NAME}/
+sudo cp ./@PROJECT_NAME@.service     /etc/systemd/system/
+
+sudo cp ./src/@PROJECT_NAME@             /usr/bin/

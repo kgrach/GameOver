@@ -1,103 +1,44 @@
-#include <iostream>
-#include <utility>
-#include <memory>
+#include "daemon.hpp"
+using namespace daemonpp;
+using namespace std::chrono_literals;
 
-using namespace std;
-
-class Animal
+class my_daemon : public daemon
 {
-    public:
-        void eat() { cout << "I'm eating generic food."<< endl; }
-};
-
-class Cat : public Animal
-{
-    public:
-        void eat() { cout << "I'm eating a rat."<<endl; }
-};
-
-void func(Animal *xyz) { xyz->eat(); }
-
-
-class Base {
-	virtual void method() {std::cout << "from Base" << std::endl;}
-	virtual void func() {std::cout << "Base::func" << std::endl;}
 public:
-  Base() {
-		func();
-	}
-	virtual ~Base() {method();}
-	void baseMethod() {method();}
+    void on_start(const dconfig& cfg) override {
+      /// Called once after daemon starts automatically with system startup or when you manually call `$ systemctl start my_daemon`
+      /// Initialize your code here...
+
+      dlog::info("my_daemon::on_start(): my_daemon version: " + cfg.get("version") + " started successfully!");
+    }
+
+    void on_update() override {
+      /// Called every DURATION set in set_update_duration()...
+      /// Update your code here...
+
+      dlog::info("my_daemon::on_update()");
+    }
+
+    void on_stop() override {
+      /// Called once before daemon is about to exit with system shutdown or when you manually call `$ systemctl stop my_daemon`
+      /// Cleanup your code here...
+
+      dlog::info("my_daemon::on_stop()");
+    }
+
+    void on_reload(const dconfig& cfg) override {
+      /// Called once after your daemon's config fil is updated then reloaded with `$ systemctl reload my_daemon`
+      /// Handle your config updates here...
+
+      dlog::info("my_daemon::on_reload(): new daemon version from updated config: " + cfg.get("version"));
+    }
 };
 
-class A : public Base {
-	void method() {std::cout << "from A" << std::endl;}
-	void func() override {std::cout << "A::func" << std::endl;}
-public:
-	A() : Base(){
-
-	}
-	~A() {method();}
-};
-
-struct aaa{
-};
-
-struct bbb {
-	char x1;
-	int32_t x2;
-	bbb() : x1('a'), x2(0x12345678) {
-	}
-};
-
-
-class B{
-	int i_;
-
-public:
-	B(int i) {
-		i_ = i;
-	}
-	int Get(){
-		return i_;
-	}
-};
-
-void f(const bbb& x) {
-	std::cout << x.x1 << std::endl;
-}
-
-int
-main(int argc, char **argv)
-{
-
-	f(bbb());
-
-	std::weak_ptr<B> ppB;
-	{
-		std::shared_ptr<B> pB = std::make_shared<B>(1);
-		ppB = pB;
-	}
-
-	std::shared_ptr<B> pB = ppB.lock();
-
-	int i;
-	if (pB)
-		i = pB->Get();
-
-	std::cout << "B::i_=" << i << endl;
-
-	{
-		A a;
-	}
-
-	unsigned char half_limit = 150;
-	
-	http://stackoverflow.com/ 
-	for (unsigned char i = 0; i < 2 * half_limit; ++i)
-	{
-			//что-то происходит;
-	}
-
-	return 0;
+int main(int argc, const char* argv[]) {
+  my_daemon dmn;                         // create a daemon instance
+  dmn.set_name("my_daemon"); // set daemon name to identify logs in syslog
+  dmn.set_update_duration(3s);   // set duration to sleep before triggering the on_update callback 3 seconds
+  dmn.set_cwd("/");      // set daemon's current working directory to root /
+  dmn.run(argc, argv);                   // run your daemon
+  return EXIT_SUCCESS;
 }
