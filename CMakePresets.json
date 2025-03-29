@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "linux-base",
+      "displayName": "GCC 11.4.0 x86_64-linux-gnu",
+      "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "${sourceDir}/conan/conan_provider.cmake"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Configure Linux Release",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CONAN_BUILD_PROFILE": "${sourceDir}/conan/linux_profile_release",
+        "CONAN_HOST_PROFILE": "${sourceDir}/conan/linux_profile_release"
+      }
+    },
+    {
+      "name": "linux-release_with_debug",
+      "displayName": "Configure Linux ReleaseWithDebug",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CONAN_BUILD_PROFILE": "${sourceDir}/conan/linux_profile_relwithdebinfo",
+        "CONAN_HOST_PROFILE": "${sourceDir}/conan/linux_profile_relwithdebinfo"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Configure Linux Debug",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CONAN_BUILD_PROFILE": "${sourceDir}/conan/linux_profile_debug",
+        "CONAN_HOST_PROFILE": "${sourceDir}/conan/linux_profile_debug"
+      }
+    }    
+  ]
+}
